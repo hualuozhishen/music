@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>音乐播放器</title>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#646cff" />
+
+    <link
+      rel="preload"
+      href="/src/styles.css"
+      as="style"
+      fetchpriority="high"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
+    />
+    <noscript><link rel="stylesheet" href="/src/styles.css" /></noscript>
+    <link rel="preload" href="/images/cd.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/images/cd_tou.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/images/background.webp" as="image" fetchpriority="high" />
+    <link rel="prefetch" href="/manifest.json" as="fetch" crossorigin />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js', {
+              scope: '/',
+            })
+            .then((registration) => {
+              console.log('✅ 离线缓存已启用，版本:', registration.scope);
+
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('🔄 发现新版本，正在更新...');
+                    if (confirm('发现新版本，是否立即更新？')) {
+                      newWorker.postMessage({ action: 'skipWaiting' });
+                      window.location.reload();
+                    }
+                  }
+                });
+              });
+            })
+            .catch((registrationError) => {
+              console.warn('❌ 离线缓存启用失败:', registrationError);
+            });
+        });
+      } else {
+        console.warn('❌ 当前浏览器不支持 Service Worker');
+      }
+    </script>
+  </body>
+</html>

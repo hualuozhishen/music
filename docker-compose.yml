@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  music:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - GIT_REPO=${GIT_REPO}
+      - GIT_TOKEN=${GIT_TOKEN}
+      - GIT_BRANCH=${GIT_BRANCH:-main}
+      - PASSWORD=${PASSWORD}
+      - GIT_URL=${GIT_URL}
+      - WEBDAV_URL=${WEBDAV_URL}
+      - WEBDAV_USER=${WEBDAV_USER}
+      - WEBDAV_PASS=${WEBDAV_PASS}
+      - ACCOUNT_ID=${ACCOUNT_ID}
+      - ACCESS_KEY_ID=${ACCESS_KEY_ID}
+      - SECRET_ACCESS_KEY=${SECRET_ACCESS_KEY}
+    volumes:
+      - ./public/music:/app/public/music
+      - ./public/covers:/app/public/covers
+      - ./public/images:/app/public/images
+    restart: unless-stopped
+    container_name: music
